@@ -10,7 +10,9 @@ localhost:8080/auth/login -- Acesso do login
 
 localhost:8080/users/{id} -- para update, atualizar dados, delete
 
-localhost:8080/users -- GET
+localhost:8080/users -- GET Busca todos os usuarios no banco
+
+localhost:8080/users -- Post Cria usuario como administrador, basta usar template abaixo
 
 # Autenticator
 
