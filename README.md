@@ -14,7 +14,8 @@ localhost:8080/users -- GET
 
 # Autenticator
 
-Autenticação realizada por token de acesso, você obtem atraves do login de um usuario criado com roles admin.
+Autenticação realizada por token de acesso, você obtem atraves do login de um usuario criado com roles admin (Bearer Token).
+O erro de sem autorização é devido a falta do token ou token incorreto, você irá receber após criar o usuario e realizar um login no mesmo.
 
 {
 
