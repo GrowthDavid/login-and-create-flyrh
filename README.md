@@ -17,6 +17,7 @@ localhost:8080/users -- GET
 Autenticação realizada por token de acesso, você obtem atraves do login de um usuario criado com roles admin.
 
 {
+
     "name": "Admin",
     
     "email": "growth@example.com",
