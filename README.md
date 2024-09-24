@@ -2,7 +2,7 @@
 
 O sistema foi testado.
 
-# Post:
+# Path:
 
 localhost:8080/access/create-first-user -- Cadastro do primeiro usuario (sem proteção)
 
