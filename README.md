@@ -21,13 +21,24 @@ O erro de sem autorização é devido a falta do token ou token incorreto, você
 
 {
 
-    "name": "Admin",
+    "nome": "Growth Admin",
     
-    "email": "growth@example.com",
+    "email": "growth.adm@central.com",
     
-    "password": "ggadmin",
+    "senha": "strongpassword",
     
-    "role": "admin"
+    "cargo": "admin",
+    
+    "telefone": 1234567890,
+    
+    "atualizadoEm": "2023-09-23",
+    
+    "criadoEm": "2023-09-23",
+    
+    "desativadoEm": null,
+    
+    "ativo": true
     
 }
+
 
