@@ -22,6 +22,7 @@ public class UserController {
     @Inject
     UserService userService;
 
+
     @POST
     @RolesAllowed("admin")
     public Response createUser(UserDTO userDTO) {

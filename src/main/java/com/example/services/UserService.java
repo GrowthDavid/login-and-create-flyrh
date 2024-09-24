@@ -14,6 +14,8 @@ import jakarta.ws.rs.NotFoundException;
 
 import org.bson.types.ObjectId;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,18 +35,30 @@ public class UserService {
         }
 
         User user = new User();
-        user.setName(userDTO.getName());
+        user.setNome(userDTO.getNome());
         user.setEmail(userDTO.getEmail());
-        user.setPassword(passwordEncryptor.encrypt(userDTO.getPassword()));
-        user.setRole(userDTO.getRole());
+        user.setSenha(passwordEncryptor.encrypt(userDTO.getSenha()));
+        user.setCargo(userDTO.getCargo());
+
+        // Definir campos adicionais
+        user.setTelefone(userDTO.getTelefone());
+        user.setCriadoEm(LocalDate.from(LocalDateTime.now())); // Definindo a data de criação
+        user.setAtualizadoEm(LocalDate.from(LocalDateTime.now())); // Definindo a data de atualização
+        user.setDesativadoEm(null); // DeactivatedAt começa como null
+        user.setAtivo(true); // Inicialmente, o usuário está ativo
 
         userRepository.persist(user);
 
         return new UserResponseDTO(
                 user.getId().toString(),
-                user.getName(),
+                user.getNome(),
                 user.getEmail(),
-                user.getRole()
+                user.getCargo(),
+                user.getTelefone(),
+                user.getAtualizadoEm(),
+                user.getCriadoEm(),
+                user.getDesativadoEm(),
+                user.isAtivo()
         );
     }
 
@@ -52,9 +66,14 @@ public class UserService {
         return userRepository.listAll().stream()
                 .map(user -> new UserResponseDTO(
                         user.getId().toString(),
-                        user.getName(),
+                        user.getNome(),
                         user.getEmail(),
-                        user.getRole()
+                        user.getCargo(),
+                        user.getTelefone(),
+                        user.getAtualizadoEm(),
+                        user.getCriadoEm(),
+                        user.getDesativadoEm(),
+                        user.isAtivo()
                 ))
                 .collect(Collectors.toList());
     }
@@ -67,8 +86,8 @@ public class UserService {
         }
 
         // Atualizar o nome se fornecido
-        if (userDTO.getName() != null && !userDTO.getName().isEmpty()) {
-            user.setName(userDTO.getName());
+        if (userDTO.getNome() != null && !userDTO.getNome().isEmpty()) {
+            user.setNome(userDTO.getNome());
         }
 
         // Atualizar o email se fornecido
@@ -81,13 +100,31 @@ public class UserService {
         }
 
         // Atualizar o role se fornecido
-        if (userDTO.getRole() != null && !userDTO.getRole().isEmpty()) {
-            user.setRole(userDTO.getRole());
+        if (userDTO.getCargo() != null && !userDTO.getCargo().isEmpty()) {
+            user.setCargo(userDTO.getCargo());
         }
 
         // Atualizar a senha se fornecida
-        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
-            user.setPassword(passwordEncryptor.encrypt(userDTO.getPassword()));
+        if (userDTO.getSenha() != null && !userDTO.getSenha().isEmpty()) {
+            user.setSenha(passwordEncryptor.encrypt(userDTO.getSenha()));
+        }
+
+        // Atualizar o telefone se fornecido
+        if (userDTO.getTelefone() != 0) {
+            user.setTelefone(userDTO.getTelefone());
+        }
+
+        // Atualizar a data de atualização
+        user.setAtualizadoEm(LocalDate.from(LocalDateTime.now()));
+
+        // Verificar se o usuário foi desativado
+        if (!userDTO.isAtivo() && user.isAtivo()) {
+            user.setDesativadoEm(LocalDate.from(LocalDateTime.now())); // Definir a data de desativação
+            user.setAtivo(false);
+        } else if (userDTO.isAtivo() && !user.isAtivo()) {
+            // Reativar o usuário
+            user.setDesativadoEm(null); // Remover a data de desativação
+            user.setAtivo(true);
         }
 
         userRepository.update(user);

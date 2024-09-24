@@ -6,6 +6,8 @@ import com.example.utils.PasswordEncryptor;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +21,8 @@ public class AuthService {
     @Inject
     PasswordEncryptor passwordEncryptor;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
+
     public String authenticate(String email, String password) throws Exception {
         // Buscar o usuário pelo email
         User user = userRepository.findByEmail(email);
@@ -28,13 +32,13 @@ public class AuthService {
             throw new Exception("Usuário não encontrado");
         }
 
-        // Teste manual para verificar a senha
-        System.out.println("--");
-        System.out.println("Senha informada: " + password);
-        System.out.println("Senha salva no banco: " + user.getPassword());
+        // Verificar se o usuário está ativo
+        if (!user.isAtivo()) {
+            throw new Exception("Usuário inativo");
+        }
 
-        boolean passwordMatch = passwordEncryptor.verify(password, user.getPassword());
-        System.out.println("Senha confere: " + passwordMatch);  // Exibe se a senha está batendo com o hash no banco
+        // Verificar a senha
+        boolean passwordMatch = passwordEncryptor.verify(password, user.getSenha());
 
         // Se a senha não bater, lançar exceção
         if (!passwordMatch) {
@@ -43,25 +47,21 @@ public class AuthService {
 
         // Se a senha for correta, gerar o token JWT
         Set<String> roles = new HashSet<>();
-        roles.add(user.getRole());
-
-        System.out.println("Log Antes do String Token" );
+        roles.add(user.getCargo());
 
         try {
             String token = Jwt.issuer("http://localhost")
                     .subject(user.getId().toString())
                     .upn(user.getEmail())
                     .groups(roles)
-                    .claim("name", user.getName())
+                    .claim("name", user.getNome())
                     .sign();
 
-            System.out.println("Token JWT gerado: " + token);
+            LOGGER.info("Token JWT gerado com sucesso para o usuário: {}", user.getEmail());
             return token;
         } catch (Exception e) {
-            System.out.println("Erro ao gerar o token JWT: " + e.getMessage());
-            e.printStackTrace(); // Imprime o stack trace completo para identificar o erro
+            LOGGER.error("Erro ao gerar o token JWT: {}", e.getMessage(), e);
             throw new RuntimeException("Erro ao gerar o token JWT", e);
         }
-
     }
 }

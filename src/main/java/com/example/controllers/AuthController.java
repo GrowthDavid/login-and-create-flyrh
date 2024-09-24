@@ -20,7 +20,7 @@ public class AuthController {
     public Response login(LoginDTO loginDTO) {
         try {
             // Autenticar o usuário e gerar o token JWT
-            String token = authService.authenticate(loginDTO.getEmail(), loginDTO.getPassword());
+            String token = authService.authenticate(loginDTO.getEmail(), loginDTO.getSenha());
 
             // Retornar o token no corpo da resposta e no cabeçalho Authorization (opcional)
             return Response.ok()
@@ -33,7 +33,7 @@ public class AuthController {
 
             // Retorna a mensagem genérica de credenciais inválidas
             return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity("{\"message\":\"Credenciais inválidas\"}")
+                    .entity("{\"message\":\""+ e.getMessage() +"\"}")
                     .build();
         }
     }
